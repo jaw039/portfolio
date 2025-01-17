@@ -1,6 +1,32 @@
+/* Global styles */
 body {
-    /* Set line height to 1.5 times the font size
-         and use the OS’s UI font as the website font
-       */
-    font: 100%/1.5 system-ui;
-  }
+  margin-inline: max(1em, (100% - 100ch) / 2);
+  line-height: 1.5;
+  font-family: system-ui;
+  padding: 1em;
+}
+
+/* Navigation styles */
+nav {
+  display: flex; /* Make the <nav> a flex container */
+  margin-bottom: 1em; /* Apply margin-bottom to the whole <nav> */
+  border-bottom: 1px solid oklch(80% 3% 200); /* Apply bottom border to <nav> */
+}
+
+nav ul, nav ul li {
+  display: contents; 
+}
+
+nav a {
+  flex: 1; /* Make the links expand to fill the space */
+  text-decoration: none; /* Remove underline from links */
+  color: inherit; /* Remove default link color */
+  text-align: center; /* Center the text in its box */
+  padding: 0.5em; /* Add padding to each link */
+  display: block;
+}
+
+nav a.current {
+  border-bottom: 0.4em solid oklch(90% 3% 200); /* Thick bottom border for current page link */
+  padding-bottom: 0.1em; /* Reduced padding-bottom to counter the border height */
+} 
