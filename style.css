@@ -1,9 +1,14 @@
+/* add accent color */
+:root {
+  --color-accent: oklch(65% 50% 15);
+}
 /* Global styles */
 body {
   margin-inline: max(1em, (100% - 100ch) / 2);
   line-height: 1.5;
   font-family: system-ui;
   padding: 1em;
+  accent-color: var(--color-accent);
 }
 
 /* Navigation styles */
@@ -24,9 +29,18 @@ nav a {
   text-align: center; /* Center the text in its box */
   padding: 0.5em; /* Add padding to each link */
   display: block;
+  position: relative;
 }
 
+/* Add hover effect to links */
 nav a.current {
   border-bottom: 0.4em solid oklch(90% 3% 200); /* Thick bottom border for current page link */
   padding-bottom: 0.1em; /* Reduced padding-bottom to counter the border height */
 } 
+
+/* Hover effects */
+nav a:hover {
+  background-color: oklch(from var(--color-accent) 95% 5% h);
+  border-bottom: 0.2em solid var(--color-accent);
+  padding-bottom: 0.5em;
+}
