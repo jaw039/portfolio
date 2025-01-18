@@ -4,11 +4,14 @@
 }
 /* Global styles */
 body {
+
   margin-inline: max(1em, (100% - 100ch) / 2);
   line-height: 1.5;
   font-family: system-ui;
-  padding: 1em;
+  padding: 2em;
   accent-color: var(--color-accent);
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
 /* Navigation styles */
@@ -43,4 +46,88 @@ nav a:hover {
   background-color: oklch(from var(--color-accent) 95% 5% h);
   border-bottom: 0.2em solid var(--color-accent);
   padding-bottom: 0.5em;
+}
+
+/* Ensure form controls inherit font styles */
+input, textarea, button {
+  font: inherit; /* Inherit all font properties (family, size, weight, etc.) */
+}
+
+/* Form styles */
+form {
+  display: grid; /* Enable Grid layout for the form */
+  grid-template-columns: auto 1fr; /* Two columns: auto for labels, 1fr for inputs */
+  gap: 1em; /* Add spacing between rows and columns */
+  align-items: center; /* Align items in the center vertically */
+}
+
+form label {
+  grid-column: 1; /* Place labels in the first column */
+}
+
+form input,
+form textarea {
+  grid-column: 2; /* Place inputs and textarea in the second column */
+}
+
+form button {
+  grid-column: 1 / -1; /* Make the button span both columns */
+  justify-self: start; /* Align button to the left */
+  padding: 0.5em 1em; /* Add padding for better usability */
+  border: none; /* Remove default border */
+  border-radius: 4px; /* Optional: Add rounded corners */
+  background-color: var(--color-accent, #007bff); /* Set background color */
+  color: white; /* Ensure text is readable */
+  cursor: pointer; /* Change cursor to pointer on hover */
+}
+
+form button:hover {
+  background-color: var(--color-accent-hover, #0056b3); /* Slightly darker on hover */
+}
+
+/* Projects container */
+.projects {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(15em, 1fr));
+  gap: 1em;
+  padding: 1em;
+}
+
+/* Article styles */
+.projects article {
+  display: grid;
+  grid-template-rows: subgrid;
+  grid-row: span 3;
+  gap: 1em;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 1em;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  background-color: white;
+}
+
+/* Image styles */
+.projects img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin-bottom: 0.5em;
+}
+
+/* Heading styles */
+h1, h2, h3, h4, h5, h6 {
+  line-height: 1.1;
+  text-wrap: balance;
+}
+
+
+
+.projects h2 {
+  font-size: 1.5rem;
+  margin: 0;
+}
+
+/* Paragraph styles */
+.projects p {
+  margin: 0;
 }
