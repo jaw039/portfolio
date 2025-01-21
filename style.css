@@ -1,10 +1,10 @@
 /* add accent color */
 :root {
   --color-accent: oklch(65% 50% 15);
+  color-scheme: light dark;
 }
 /* Global styles */
 body {
-
   margin-inline: max(1em, (100% - 100ch) / 2);
   line-height: 1.5;
   font-family: system-ui;
@@ -12,12 +12,15 @@ body {
   accent-color: var(--color-accent);
   max-width: 1400px;
   margin: 0 auto;
+  background-color: canvas;   /* Add a background color */
+  color: canvastext; /* Set text color */
 }
 
 /* Navigation styles */
 nav {
   display: flex; /* Make the <nav> a flex container */
   margin-bottom: 1em; /* Apply margin-bottom to the whole <nav> */
+  --border-color: oklch(50% 10% 200 / 40%); /* Define a border color */
   border-bottom: 1px solid oklch(80% 3% 200); /* Apply bottom border to <nav> */
 }
 
@@ -43,7 +46,7 @@ nav a.current {
 
 /* Hover effects */
 nav a:hover {
-  background-color: oklch(from var(--color-accent) 95% 5% h);
+  background-color: color-mix(in oklch, var(--color-accent), canvas 85%);
   border-bottom: 0.2em solid var(--color-accent);
   padding-bottom: 0.5em;
 }
@@ -82,7 +85,7 @@ form button {
 }
 
 form button:hover {
-  background-color: var(--color-accent-hover, #0056b3); /* Slightly darker on hover */
+  background-color: color-mix(in oklch, var(--color-accent), canvas 85%);
 }
 
 /* Projects container */
@@ -103,7 +106,8 @@ form button:hover {
   border-radius: 8px;
   padding: 1em;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  background-color: white;
+  background-color: canvas;
+  color: canvastext;
 }
 
 /* Image styles */
@@ -120,8 +124,6 @@ h1, h2, h3, h4, h5, h6 {
   text-wrap: balance;
 }
 
-
-
 .projects h2 {
   font-size: 1.5rem;
   margin: 0;
@@ -130,4 +132,52 @@ h1, h2, h3, h4, h5, h6 {
 /* Paragraph styles */
 .projects p {
   margin: 0;
+}
+
+/* Dark mode Dropdown */
+/* Dark mode Dropdown */
+.color-scheme {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  background-color: canvas;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  z-index: 1000;
+  font-size: 0.75rem;
+}
+
+.color-scheme select {
+  padding: 0.25rem;
+  font: inherit;
+  border: 1px solid var(--border-color, rgba(0, 0, 0, 0.1));
+  border-radius: 3px;
+  background-color: canvas;
+  color: canvastext;
+  cursor: pointer;
+  min-width: 80px;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.25rem center;
+  padding-right: 1.5rem;
+}
+
+.color-scheme select:hover {
+  border-color: var(--color-accent);
+}
+
+.color-scheme select:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 2px rgba(var(--color-accent), 0.1);
+}
+
+/* Optional: Add transition for smooth hover effects */
+.color-scheme select {
+  transition: all 0.2s ease;
 }
