@@ -73,13 +73,30 @@ document.body.insertAdjacentHTML(
     `
   );
 
-// Reference the dropdown
+  
+// Function to set color scheme and update UI
+function setColorScheme(colorScheme) {
+    // Update the CSS property / set the theme color
+    document.documentElement.style.setProperty('color-scheme', colorScheme);
+    // Update the select element's value to match the current theme
+    const themeSwitcher = document.querySelector('#theme-switcher');
+    if (themeSwitcher) {
+        themeSwitcher.value = colorScheme;
+    }
+    // Save to localStorage
+    localStorage.colorScheme = colorScheme;
+}
+
+// Get the theme switcher element
 const themeSwitcher = document.querySelector('#theme-switcher');
 
-// Add an event listener for the "input" event
-themeSwitcher.addEventListener('input', function (event) {
-    const selectedTheme = event.target.value; // Get the selected value
-    document.documentElement.style.setProperty('color-scheme', selectedTheme); // Update the color scheme
-  });
+// Add the event listener for when user changes the theme
+themeSwitcher.addEventListener('input', function(event) {
+    setColorScheme(event.target.value);
+});
 
-  
+// On page load, check for and apply saved preference
+if ("colorScheme" in localStorage) {
+    // This will both set the color scheme AND update the select element
+    setColorScheme(localStorage.colorScheme);
+}
