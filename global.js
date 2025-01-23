@@ -18,12 +18,12 @@
 // currentLink.classList.add('current');
 
 let pages = [
-    { url: '', title: 'Home' },
-    { url: 'projects', title: 'Projects' },
-    { url: 'contact', title: 'Contact' },
-    { url: 'resume', title: 'Resume' },
+    { url: '/', title: 'Home' },
+    { url: '/projects/', title: 'Projects' },  // Adding trailing slash
+    { url: '/contact/', title: 'Contact' },    // Adding trailing slash
+    { url: '/resume/', title: 'Resume' },      // Adding trailing slash
     { url: 'https://github.com/jaw039', title: 'Profile' }
-  ];
+];
   
 
 // Add <nav> to the page
