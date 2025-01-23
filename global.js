@@ -16,20 +16,14 @@
 
 // /*Add current class to current page link*/
 // currentLink.classList.add('current');
-// First, detect if we're in development or production
-
-const isDevelopment = window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost';
-const BASE_URL = isDevelopment ? '' : '/portfolio';
-
 
 let pages = [
-    { url: `${BASE_URL}/`, title: 'Home' },
-    { url: `${BASE_URL}/projects/`, title: 'Projects' },
-    { url: `${BASE_URL}/contact/`, title: 'Contact' },
-    { url: `${BASE_URL}/resume/`, title: 'Resume' },
+    { url: '', title: 'Home' },               
+    { url: 'projects/', title: 'Projects' },    
+    { url: 'contact/', title: 'Contact' },    
+    { url: 'resume/', title: 'Resume' },        
     { url: 'https://github.com/jaw039', title: 'Profile' }
 ];
-
 
 // Add <nav> to the page
 let nav = document.createElement('nav');
