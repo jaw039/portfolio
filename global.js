@@ -38,9 +38,7 @@ for (let p of pages) {
     let title = p.title;
 
     // If it's not the home page and not an external link, add '../'
-    if (!ARE_WE_HOME && !url.startsWith('http')) {
-        url = '../' + url;
-    }
+    url = !ARE_WE_HOME && !url.startsWith('http') ? '../' + url : url;
 
     // Create the <a> element
     let a = document.createElement('a');
@@ -48,7 +46,7 @@ for (let p of pages) {
     a.textContent = title;
 
     // Add the "current" class to the current page link
-    a.classList.toggle('current', location.host && a.pathname === location.pathname);
+    a.classList.toggle('current', a.host === location.host && a.pathname === location.pathname);
 
     // Add target = "_blank" to external links
     if (a.host !== location.host) {
