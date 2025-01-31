@@ -7,12 +7,12 @@
     {
         "title": "Music Genre Prediction",
         "image": "https://vis-society.github.io/labs/2/images/empty.svg",
-        "description": "This is a data science project for COGS108 at UC San Diego. We analyzed Spotify data to explore how audio features like danceability, energy, and popularity correlate with music genres. Our findings help improve music recommendations and deepen our understanding of the characteristics that define different genres.."
+        "description": "This is a data science project for COGS108 at UC San Diego. We analyzed Spotify data to explore how audio features like danceability, energy, and popularity correlate with music genres. Our findings help improve music recommendations and deepen our understanding of the characteristics that define different genres."
     },
     {
-        "title": "Lorem ipsum dolor",
+        "title": "Case Study: Strategic Business Insight",
         "image": "https://vis-society.github.io/labs/2/images/empty.svg",
-        "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+        "description": "This is a data science case study completed as part of the Deloitte Data Science Mentorship Program. We analyzed customer purchase behavior to uncover insights for targeted marketing and stock optimization. By applying data cleaning, exploratory analysis, and machine learning (Random Forest Regressor), we predicted purchase patterns and identified effective bundling and promotional strategies. These findings can guide businesses in making informed decisions to boost customer engagement and optimize inventory."
     },
     {
         "title": "Lorem ipsum dolor",
