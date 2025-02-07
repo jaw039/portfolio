@@ -213,3 +213,77 @@ h1, h2, h3, h4, h5, h6 {
   font-variant-numeric: oldstyle-nums;
   font-weight: bold;
 }
+
+/* Pie chart container improvements */
+.pie-container {
+  display: flex;
+  align-items: start;     /* align items to top instead of center */
+  gap: 2em;              /* increased spacing between chart and legend */
+  padding: 2em;          /* add some padding around the container */
+  background: color-mix(in oklch, canvas, transparent 92%); /* subtle background */
+  border-radius: 8px;    /* rounded corners */
+  margin-bottom: 3em;    /* space before projects section */
+}
+
+/* Pie chart SVG improvements */
+#projects-pie-plot {
+  flex-shrink: 0;        /* prevent SVG from shrinking */
+  max-width: 25em;       /* slightly larger max-width */
+  margin: 0;             /* remove margin since container has padding */
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1)); /* add subtle shadow */
+}
+
+/* Legend improvements */
+.legend {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(12em, 1fr)); /* wider columns */
+  gap: 0.8em;           /* increased gap */
+  margin: 0;            /* remove margin since container has padding */
+  padding: 1.5em;       /* increased padding */
+  border: 1px solid color-mix(in oklch, canvastext, transparent 85%); /* subtler border */
+  border-radius: 8px;   /* match container's rounded corners */
+  background: color-mix(in oklch, canvas, transparent 95%); /* very subtle background */
+}
+
+/* Legend items improvements */
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;          /* increased gap between swatch and text */
+  padding: 0.4em 0.6em; /* add padding around items */
+  border-radius: 4px;   /* rounded corners */
+  transition: background-color 0.2s; /* smooth hover effect */
+}
+
+.legend-item:hover {
+  background-color: color-mix(in oklch, canvastext, transparent 95%); /* subtle hover effect */
+}
+
+/* Swatch improvements */
+.legend-item .swatch {
+  display: inline-block;
+  width: 1.2rem;        /* slightly larger swatch */
+  height: 1.2rem;
+  background-color: var(--color);
+  border-radius: 4px;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.1); /* inner shadow for depth */
+}
+
+/* Make it responsive */
+@media (max-width: 768px) {
+  .pie-container {
+    flex-direction: column;
+    align-items: center;
+    gap: 1em;
+  }
+
+  #projects-pie-plot {
+    max-width: 20em;
+  }
+
+  .legend {
+    width: 100%;
+    grid-template-columns: repeat(auto-fill, minmax(8em, 1fr));
+  }
+}
