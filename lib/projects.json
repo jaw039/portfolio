@@ -1,61 +1,73 @@
 [
     {
         "title": "Culinary Insight",
+        "year": "c.2024",
         "image": "https://vis-society.github.io/labs/2/images/empty.svg",
         "description": "This is a data science project for DSC80 at UC San Diego. We decided to analyze this data as it allows us to discover new recipes to try in our own kitchen and better understand the nutritional value and benefits of different foods. This knowledge helps us make informed choices to support our fitness goals while still enjoying delicious and healthy meals."
     },
     {
         "title": "Music Genre Prediction",
+        "year": "c.2024",
         "image": "https://vis-society.github.io/labs/2/images/empty.svg",
         "description": "This is a data science project for COGS108 at UC San Diego. We analyzed Spotify data to explore how audio features like danceability, energy, and popularity correlate with music genres. Our findings help improve music recommendations and deepen our understanding of the characteristics that define different genres."
     },
     {
         "title": "Case Study: Strategic Business Insight",
+        "year": "c.2024",
         "image": "https://vis-society.github.io/labs/2/images/empty.svg",
         "description": "This is a data science case study completed as part of the Deloitte Data Science Mentorship Program. We analyzed customer purchase behavior to uncover insights for targeted marketing and stock optimization. By applying data cleaning, exploratory analysis, and machine learning (Random Forest Regressor), we predicted purchase patterns and identified effective bundling and promotional strategies. These findings can guide businesses in making informed decisions to boost customer engagement and optimize inventory."
     },
     {
         "title": "Lorem ipsum dolor",
+        "year": "c.2023",
         "image": "https://vis-society.github.io/labs/2/images/empty.svg",
         "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
     },
     {
         "title": "Lorem ipsum dolor",
+        "year": "c.2023",
         "image": "https://vis-society.github.io/labs/2/images/empty.svg",
         "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
     },
     {
         "title": "Lorem ipsum dolor",
+        "year": "c.2023",
         "image": "https://vis-society.github.io/labs/2/images/empty.svg",
         "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
     },
     {
         "title": "Lorem ipsum dolor",
+        "year": "c.2022",
         "image": "https://vis-society.github.io/labs/2/images/empty.svg",
         "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
     },
     {
         "title": "Lorem ipsum dolor",
+        "year": "c.2022",
         "image": "https://vis-society.github.io/labs/2/images/empty.svg",
         "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
     },
     {
         "title": "Lorem ipsum dolor",
+        "year": "c.2022",
         "image": "https://vis-society.github.io/labs/2/images/empty.svg",
         "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
     },
     {
         "title": "Lorem ipsum dolor",
+        "year": "c.2022",
         "image": "https://vis-society.github.io/labs/2/images/empty.svg",
         "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
     },
     {
         "title": "Lorem ipsum dolor",
+        "year": "c.2021",
         "image": "https://vis-society.github.io/labs/2/images/empty.svg",
         "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
     },
     {
         "title": "Lorem ipsum dolor",
+        "year": "c.2021",
         "image": "https://vis-society.github.io/labs/2/images/empty.svg",
         "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
     }
