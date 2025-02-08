@@ -30,17 +30,20 @@ const colors = d3.scaleOrdinal(d3.schemeTableau10);
  * Update the classes on wedges and legend items.
  */
 function updateWedgeAndLegendStyles() {
-  // Update wedge styles using d3.classed()
-  d3.select("#projects-pie-plot")
-    .selectAll("path")
-    .classed("selected", (_, idx) => idx === selectedIndex);
-
-  // Update legend styles using d3.classed()
-  d3.select(".legend")
-    .selectAll("li")
-    .classed("selected-legend", (_, idx) => idx === selectedIndex);
-}
-
+    // Update pie wedge classes
+    d3.select("#projects-pie-plot")
+      .selectAll("path")
+      .attr("class", (_, idx) => (idx === selectedIndex ? "selected" : ""));
+    
+    // Update legend items - only change the swatch color
+    d3.select(".legend")
+      .selectAll("li")
+      .attr("class", "legend-item")
+      .select(".swatch")
+      .style("background-color", (_, idx) => 
+        idx === selectedIndex ? "oklch(60% 45% 0)" : colors(idx)
+      );
+  }
 /**
  * Recalculate the rolled data from given projects.
  */
@@ -60,70 +63,80 @@ function recalculate(projectsGiven) {
  * Build the arcs, register click events on wedges and legend items.
  */
 function renderPieChart(projectsGiven) {
-  // Calculate data for pie chart
+  // Calculate data for pie chart (rolled up by year).
   const newData = recalculate(projectsGiven);
   const sliceGenerator = d3.pie().value(d => d.value);
   const arcData = sliceGenerator(newData);
   const arcs = arcData.map(d => arcGenerator(d));
   
-  // Clear and rebuild the pie svg elements
+  // Clear and rebuild the pie svg elements and legend.
   const svg = d3.select("#projects-pie-plot");
   svg.selectAll("path").remove();
-
-  arcs.forEach((arcPath, idx) => {
+  
+  const legend = d3.select(".legend");
+  legend.html("");
+  
+  // Build wedges with click events.
+  arcs.forEach((arc, i) => {
     svg.append("path")
-       .attr("d", arcPath)
-       .attr("fill", colors(idx))
+       .attr("d", arc)
+       .attr("fill", colors(i))
        .style("cursor", "pointer")
        .on("click", () => {
-         // Toggle selection
-         selectedIndex = selectedIndex === idx ? -1 : idx;
+         // Toggle selection: deselect if already selected.
+         selectedIndex = selectedIndex === i ? -1 : i;
+         
+         // Update styles for wedges and legend.
          updateWedgeAndLegendStyles();
          
+         // Filter the projects based on selection.
          if (selectedIndex === -1) {
-           // Show current (search filtered) projects when nothing is selected
-           projectsContainer.innerHTML = '';
-           currentProjects.forEach(project => renderProjects(project, projectsContainer, "h2"));
+           // No selection: render all projects.
+           projectsContainer.innerHTML = "";
+           projects.forEach(project => renderProjects(project, projectsContainer, "h2"));
+           if (projectsTitle) {
+             projectsTitle.innerHTML = `${projects.length} Projects`;
+           }
          } else {
-           // Filter currentProjects by selected year
+           // A wedge is selected: filter by the corresponding year.
            const selectedYear = newData[selectedIndex].label;
-           const filteredProjects = currentProjects.filter(proj => 
-             proj.year.toString() === selectedYear
-           );
-           projectsContainer.innerHTML = '';
-           filteredProjects.forEach(project => renderProjects(project, projectsContainer, "h2"));
+           const filtered = projects.filter(project => String(project.year) === selectedYear);
+           projectsContainer.innerHTML = "";
+           filtered.forEach(project => renderProjects(project, projectsContainer, "h2"));
+           if (projectsTitle) {
+             projectsTitle.innerHTML = `${filtered.length} Projects`;
+           }
          }
        });
   });
-
-  // Rebuild the legend items
-  const legend = d3.select(".legend");
-  legend.html(""); // Clear legend
   
-  newData.forEach((d, idx) => {
-    legend.append("li")
-          .attr("style", `--color:${colors(idx)}`) // sets color via CSS variable
-          .attr("class", "legend-item")
-          .html(`<span class="swatch"></span> ${d.label} <em>(${d.value})</em>`)
-          .style("cursor", "pointer")
-          .on("click", () => {
-            // Toggle selection from legend
-            selectedIndex = selectedIndex === idx ? -1 : idx;
+    // Build legend items with click events.
+    newData.forEach((d, i) => {
+        legend.append("li")
+        .attr("class", "legend-item")
+        .style("cursor", "pointer")
+        .html(`<span class="swatch" style="background-color: ${colors(i)}"></span>${d.label} <em>(${d.value})</em>`)
+        .on("click", () => {
+            selectedIndex = selectedIndex === i ? -1 : i;
             updateWedgeAndLegendStyles();
             
             if (selectedIndex === -1) {
-              projectsContainer.innerHTML = '';
-              currentProjects.forEach(project => renderProjects(project, projectsContainer, "h2"));
-            } else {
-              const selectedYear = d.label;
-              const filteredProjects = currentProjects.filter(proj => 
-                proj.year.toString() === selectedYear
-              );
-              projectsContainer.innerHTML = '';
-              filteredProjects.forEach(project => renderProjects(project, projectsContainer, "h2"));
+            projectsContainer.innerHTML = "";
+            projects.forEach(project => renderProjects(project, projectsContainer, "h2"));
+            if (projectsTitle) {
+                projectsTitle.innerHTML = `${projects.length} Projects`;
             }
-          });
-  });
+            } else {
+            const selectedYear = newData[selectedIndex].label;
+            const filtered = projects.filter(project => String(project.year) === selectedYear);
+            projectsContainer.innerHTML = "";
+            filtered.forEach(project => renderProjects(project, projectsContainer, "h2"));
+            if (projectsTitle) {
+                projectsTitle.innerHTML = `${filtered.length} Projects`;
+            }
+            }
+        });
+    });
 }
 
 // Initial render of the pie chart and legend
