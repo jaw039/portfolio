@@ -254,10 +254,15 @@ h1, h2, h3, h4, h5, h6 {
   padding: 0.4em 0.6em; /* add padding around items */
   border-radius: 4px;   /* rounded corners */
   transition: background-color 0.2s; /* smooth hover effect */
+  cursor: pointer;
 }
 
 .legend-item:hover {
   background-color: color-mix(in oklch, canvastext, transparent 95%); /* subtle hover effect */
+}
+
+.legend-item:hover:not(.selected) {
+  background-color: color-mix(in oklch, canvastext, transparent 95%);
 }
 
 /* Swatch improvements */
@@ -287,3 +292,27 @@ h1, h2, h3, h4, h5, h6 {
     grid-template-columns: repeat(auto-fill, minmax(8em, 1fr));
   }
 }
+
+/* Pie chart and legend selection styles */
+.selected {
+  --color: oklch(60% 45% 0) !important;
+}
+
+.selected:is(path) {
+  fill: var(--color);
+}
+
+/* Hover effects for pie slices */
+#projects-pie-plot:has(path:hover) path:not(:hover) {
+  opacity: 0.5;
+}
+
+#projects-pie-plot path {
+  transition: opacity 300ms;
+  cursor: pointer;
+  opacity: 1;
+}
+
+/* #projects-pie-plot:hover path:not(:hover):not(.selected) {
+  opacity: 0.5;
+} */
