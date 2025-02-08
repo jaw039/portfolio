@@ -9,6 +9,8 @@ const projectsTitle = document.querySelector(".projects-title");
 // Global state
 let selectedIndex = -1;
 let projects = await fetchJSON("../lib/projects.json");
+// currentProjects holds the projects filtered by search
+let currentProjects = projects;
 
 // Render all projects initially
 projects.forEach((project) => {
@@ -79,13 +81,15 @@ function renderPieChart(projectsGiven) {
          updateWedgeAndLegendStyles();
          
          if (selectedIndex === -1) {
-           // Show all projects when nothing is selected
+           // Show current (search filtered) projects when nothing is selected
            projectsContainer.innerHTML = '';
-           projects.forEach(project => renderProjects(project, projectsContainer, "h2"));
+           currentProjects.forEach(project => renderProjects(project, projectsContainer, "h2"));
          } else {
-           // Filter projects by selected year
+           // Filter currentProjects by selected year
            const selectedYear = newData[selectedIndex].label;
-           const filteredProjects = projects.filter(proj => proj.year.toString() === selectedYear);
+           const filteredProjects = currentProjects.filter(proj => 
+             proj.year.toString() === selectedYear
+           );
            projectsContainer.innerHTML = '';
            filteredProjects.forEach(project => renderProjects(project, projectsContainer, "h2"));
          }
@@ -109,10 +113,12 @@ function renderPieChart(projectsGiven) {
             
             if (selectedIndex === -1) {
               projectsContainer.innerHTML = '';
-              projects.forEach(project => renderProjects(project, projectsContainer, "h2"));
+              currentProjects.forEach(project => renderProjects(project, projectsContainer, "h2"));
             } else {
               const selectedYear = d.label;
-              const filteredProjects = projects.filter(proj => proj.year.toString() === selectedYear);
+              const filteredProjects = currentProjects.filter(proj => 
+                proj.year.toString() === selectedYear
+              );
               projectsContainer.innerHTML = '';
               filteredProjects.forEach(project => renderProjects(project, projectsContainer, "h2"));
             }
@@ -126,17 +132,19 @@ renderPieChart(projects);
 // Search functionality to filter projects and update chart/legend accordingly
 searchInput.addEventListener('input', (event) => {
   const query = event.target.value.trim().toLowerCase();
-  const filteredProjects = projects.filter((project) => {
+  currentProjects = projects.filter((project) => {
     const values = Object.values(project).join('\n').toLowerCase();
     return values.includes(query);
   });
   
+  // Reset selection
   selectedIndex = -1;
+  
   projectsContainer.innerHTML = '';
-  filteredProjects.forEach(project => renderProjects(project, projectsContainer, "h2"));
+  currentProjects.forEach(project => renderProjects(project, projectsContainer, "h2"));
   
   if (projectsTitle) {
-    projectsTitle.innerHTML = `${filteredProjects.length} Projects`;
+    projectsTitle.innerHTML = `${currentProjects.length} Projects`;
   }
-  renderPieChart(filteredProjects);
+  renderPieChart(currentProjects);
 });
