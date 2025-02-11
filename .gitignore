@@ -1,5 +1,5 @@
-# # Dependencies
-# node_modules/
+# Dependencies
+node_modules/
 
-# # Generated files
-# meta/loc.csv
+# Generated files
+meta/loc.csv
