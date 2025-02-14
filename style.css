@@ -324,15 +324,17 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Lab 6 Meta Page CSS */
 .summary-section {
-  border: 1px solid #ccc;
+  border: 1px solid var(--border-color);  /* Use CSS variable */
   padding: 1.5rem;
   margin: 1rem 0;
-  background-color: white;
+  background-color: var(--container-color);  /* Use container color variable */
+  color: var(--text-color);  /* Use text color variable */
 }
 
 .summary-section h2 {
   margin-top: 0;
   margin-bottom: 1rem;
+  color: var(--title-color);  /* Use title color variable */
 }
 
 .stats-grid {
@@ -345,7 +347,7 @@ h1, h2, h3, h4, h5, h6 {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
   gap: 1rem;
-  color: #666;
+  color: var(--text-color);  /* Use text color variable */
   font-size: 0.875rem;
 }
 
@@ -355,6 +357,7 @@ h1, h2, h3, h4, h5, h6 {
   gap: 1rem;
   font-size: 1.5rem;
   font-weight: bold;
+  color: var(--title-color);  /* Use title color variable */
 }
 
 .gridlines line {
