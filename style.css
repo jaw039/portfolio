@@ -372,3 +372,73 @@ h1, h2, h3, h4, h5, h6 {
   margin: 1rem 0;
   border: 1px solid #ccc;
 }
+
+
+/* Existing styles remain the same... */
+
+/* Info definition list styling */
+dl.info {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.5em;
+  margin: 0;
+}
+
+dl.info dt {
+  color: #666;
+  font-size: 0.875rem;
+}
+
+dl.info dd {
+  margin: 0;
+}
+
+/* Tooltip positioning */
+
+.tooltip {
+  position: fixed;
+  background-color: rgba(255, 255, 255, 0.95);
+  padding: 1em;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(8px);
+  z-index: 1000;
+}
+
+/* Circle hover effects */
+circle {
+  transition: 200ms;
+  transform-origin: center;
+  transform-box: fill-box;
+}
+
+circle:hover {
+  transform: scale(1.5);
+}
+
+#selection-count {
+  position: static; /* Override any fixed positioning */
+  margin-top: 1em;
+  margin-bottom: 1em;
+  font-size: 1.2em;
+}
+
+#language-breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2em;
+  font-family: monospace;
+  margin: 1em 0;
+}
+
+#language-breakdown dt {
+  font-size: 1em;
+  text-transform: lowercase;
+}
+
+#language-breakdown dd {
+  margin: 0;
+  font-size: 1em;
+  line-height: 1.5;
+  margin-left: 2em;
+}
