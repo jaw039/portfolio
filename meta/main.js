@@ -28,9 +28,11 @@ function getTimeColor(hour) {
 
 function isCommitSelected(commit) {
   if (!brushSelection) return false;
+
   const [[x0, y0], [x1, y1]] = brushSelection;
   const x = xScale(commit.datetime);
   const y = yScale(commit.hourFrac);
+
   return x >= x0 && x <= x1 && y >= y0 && y <= y1;
 }
 
@@ -192,22 +194,26 @@ function updateTooltipPosition(event) {
 }
 
 function createBrush(svg, mainGroup) {
-  const brush = d3.brush()
-    .on('start brush end', (event) => {
-      brushSelection = event.selection;
-      if (event.selection) {
-        mainGroup.selectAll('circle')
-          .classed('selected', d => isCommitSelected(d));
-        updateSelectionCount();
-        updateLanguageBreakdown();
-      } else {
-        mainGroup.selectAll('circle').classed('selected', false);
-        updateSelectionCount();
-        updateLanguageBreakdown();
-      }
-    });
+  const brush = d3.brush().on('start brush end', (event) => {
+    brushSelection = event.selection;
+    if (event.selection) {
+      // Update visual selection
+      mainGroup.selectAll("circle").classed("selected", (d) => isCommitSelected(d));
 
-  svg.select('.brush').call(brush);
+      // Update selection stats
+      updateSelectionCount();
+      updateLanguageBreakdown();
+    } else {
+      // Clear selection if brush is removed
+      mainGroup.selectAll("circle").classed("selected", false);
+      updateSelectionCount();
+      updateLanguageBreakdown();
+    }
+  });
+
+  // Add brush to existing brush group
+  svg.select(".brush").call(brush);
+
   return brush;
 }
 
@@ -302,11 +308,11 @@ function createScatterplot() {
         .attr('r', d => rScale(d.totalLines));
     });
 
-  // Add brush
-  const brushGroup = svg.append('g').attr('class', 'brush');
+  // Create and add brush
+  const brushGroup = svg.append("g").attr("class", "brush");
   createBrush(svg, mainGroup);
-  
-  // Ensure dots are above brush overlay
+
+  // Ensure dots are above brush overlay by moving the brush group below dots
   brushGroup.lower();
   
   // Fix pointer events
