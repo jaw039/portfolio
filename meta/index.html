@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Code Statistics</title>
     <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="meta.css">
     <script src="../global.js" type="module"></script>
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="main.js" defer></script>
@@ -15,6 +16,14 @@
         <p>This page includes stats about the code of this website.</p>
         <div id="stats"></div>
         <h2>Commits by time of Day</h2>
+        <div class = "time-filter">
+            <label>
+                Show commits until:
+                <input type = "range" id = "time-slider" min = "0" max = "100" value = "100">
+                <time id = "selectedTime"></time>
+            </label>
+        </div>
+
         <div id="chart"></div>
         <p id="selection-count" style="margin-top: 1em;">No commits selected</p>
         <dl id="language-breakdown" class="stats"></dl>

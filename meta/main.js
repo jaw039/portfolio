@@ -1,7 +1,9 @@
 let data = [];
 let commits = [];
-let xScale, yScale; // Make scales global
+let xScale, yScale, timeScale; // Make scales global
 let selectedCommits = [];
+let commitProgress = 100;
+let commitMaxTime;
 
 const width = 1000;
 const height = 600;
@@ -100,6 +102,12 @@ function processCommits() {
 
 function displayStats() {
   processCommits();
+  
+  // Set up time scale after commits are processed
+  timeScale = d3.scaleTime()
+    .domain([d3.min(commits, d => d.datetime), d3.max(commits, d => d.datetime)])
+    .range([0, 100]);
+  commitMaxTime = timeScale.invert(commitProgress);
 
   const statsDiv = d3.select('#stats')
     .append('div')
@@ -324,7 +332,33 @@ function createScatterplot() {
   brushGroup.selectAll('.handle').style('pointer-events', 'none');
 }
 
+// Update the display of the selected time
+function updateTimeDisplay() {
+  const selectedTime = document.getElementById('selectedTime');
+  if (selectedTime) {
+    selectedTime.textContent = timeScale.invert(commitProgress).toLocaleString('en', {
+      dateStyle: "long",
+      timeStyle: "short"
+    });
+  }
+}
+
+// Add event listener for the time slider
+function setupTimeSlider() {
+  const slider = document.getElementById('time-slider');
+  if (slider) {
+    slider.addEventListener('input', (event) => {
+      commitProgress = Number(event.target.value);
+      commitMaxTime = timeScale.invert(commitProgress);
+      updateTimeDisplay();
+      // We'll add filtering functionality in the next step
+    });
+  }
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
   await loadData();
   createScatterplot();
+  updateTimeDisplay();
+  setupTimeSlider();
 });

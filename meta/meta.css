@@ -1,0 +1,22 @@
+/* Time filter styles */
+.time-filter {
+    display: flex;
+    align-items: baseline;
+    margin: 1em 0;
+  }
+  
+  .time-filter label {
+    display: flex;
+    flex: 1;
+    align-items: baseline;
+  }
+  
+  .time-filter input {
+    margin: 0 1em;
+    flex: 1;
+  }
+  
+  .time-filter time {
+    margin-left: auto;
+    font-family: monospace;
+  }
