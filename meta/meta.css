@@ -1,0 +1,41 @@
+/* Time filter styles */
+.time-filter {
+    display: flex;
+    align-items: baseline;
+    margin: 1em 0;
+  }
+  
+  .time-filter label {
+    display: flex;
+    flex: 1;
+    align-items: baseline;
+  }
+  
+  .time-filter input {
+    margin: 0 1em;
+    flex: 1;
+  }
+  
+  .time-filter time {
+    margin-left: auto;
+    font-family: monospace;
+  }
+
+  .time-filter input[type="range"] {
+    accent-color: #4299e1; 
+  }
+
+/* Circle animations and transitions */
+circle {
+    transition: all 200ms, r calc(var(--r) * 10ms);
+    transform-origin: center;
+    transform-box: fill-box;
+    
+    @starting-style {
+      r: 0;
+    }
+  }
+  
+  circle:hover {
+    transform: scale(1.5);
+  }
