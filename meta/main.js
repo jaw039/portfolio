@@ -1,5 +1,13 @@
-let data = [];
+// Filter commits by the maximum time
+function filterCommitsByTime() {
+  commitMaxTime = timeScale.invert(commitProgress);
+  filteredCommits = commits.filter(commit => commit.datetime <= commitMaxTime);
+  
+  // Clear selected commits when time changes
+  selectedCommits = [];
+}let data = [];
 let commits = [];
+let filteredCommits = []; // Add filteredCommits variable
 let xScale, yScale, timeScale; // Make scales global
 let selectedCommits = [];
 let commitProgress = 100;
@@ -108,6 +116,9 @@ function displayStats() {
     .domain([d3.min(commits, d => d.datetime), d3.max(commits, d => d.datetime)])
     .range([0, 100]);
   commitMaxTime = timeScale.invert(commitProgress);
+  
+  // Initialize filtered commits
+  filterCommitsByTime();
 
   const statsDiv = d3.select('#stats')
     .append('div')
@@ -198,7 +209,7 @@ function createBrush(svg, mainGroup) {
     let brushSelection = evt.selection;
     selectedCommits = !brushSelection
       ? []
-      : commits.filter((commit) => {
+      : filteredCommits.filter((commit) => {
           let min = { x: brushSelection[0][0], y: brushSelection[0][1] };
           let max = { x: brushSelection[1][0], y: brushSelection[1][1] };
           let x = xScale(commit.datetime);
@@ -226,8 +237,11 @@ function createBrush(svg, mainGroup) {
   return brush;
 }
 
-function createScatterplot() {
+function updateScatterplot(filteredCommits) {
   const margin = { top: 10, right: 10, bottom: 30, left: 20 };
+  
+  // Clear existing SVG
+  d3.select('#chart svg').remove();
   
   const svg = d3
     .select('#chart')
@@ -246,9 +260,10 @@ function createScatterplot() {
     height: height - margin.top - margin.bottom,
   };
   
+  // Update scales to use filteredCommits
   xScale = d3
     .scaleTime()
-    .domain(d3.extent(commits, (d) => d.datetime))
+    .domain(d3.extent(filteredCommits, (d) => d.datetime))
     .range([usableArea.left, usableArea.right])
     .nice();
   
@@ -256,7 +271,7 @@ function createScatterplot() {
     .domain([0, 24])
     .range([usableArea.bottom, usableArea.top]);
 
-  const [minLines, maxLines] = d3.extent(commits, (d) => d.totalLines);
+  const [minLines, maxLines] = d3.extent(filteredCommits, (d) => d.totalLines);
   const rScale = d3
     .scaleSqrt()
     .domain([minLines, maxLines])
@@ -284,7 +299,7 @@ function createScatterplot() {
     .attr('transform', `translate(${usableArea.left}, 0)`)
     .call(yAxis);
   
-  const sortedCommits = d3.sort(commits, (d) => -d.totalLines);
+  const sortedCommits = d3.sort(filteredCommits, (d) => -d.totalLines);
   const dots = mainGroup.append('g').attr('class', 'dots');
   
   dots
@@ -294,6 +309,7 @@ function createScatterplot() {
     .attr('cx', (d) => xScale(d.datetime))
     .attr('cy', (d) => yScale(d.hourFrac))
     .attr('r', (d) => rScale(d.totalLines))
+    .style('--r', (d) => rScale(d.totalLines)) // Set CSS variable for radius-based transition timing
     .attr('fill', d => getTimeColor(d.datetime.getHours()))
     .style('fill-opacity', 0.7)
     .on('mouseenter', (event, commit) => {
@@ -341,6 +357,12 @@ function updateTimeDisplay() {
       timeStyle: "short"
     });
   }
+  
+  // Filter commits and update visualization
+  filterCommitsByTime();
+  updateScatterplot(filteredCommits);
+  updateSelectionCount();
+  updateLanguageBreakdown();
 }
 
 // Add event listener for the time slider
@@ -349,16 +371,14 @@ function setupTimeSlider() {
   if (slider) {
     slider.addEventListener('input', (event) => {
       commitProgress = Number(event.target.value);
-      commitMaxTime = timeScale.invert(commitProgress);
       updateTimeDisplay();
-      // We'll add filtering functionality in the next step
     });
   }
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
   await loadData();
-  createScatterplot();
+  updateScatterplot(filteredCommits);
   updateTimeDisplay();
   setupTimeSlider();
 });
