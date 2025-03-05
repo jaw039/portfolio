@@ -1,17 +1,9 @@
-// Filter commits by the maximum time
-function filterCommitsByTime() {
-  commitMaxTime = timeScale.invert(commitProgress);
-  filteredCommits = commits.filter(commit => commit.datetime <= commitMaxTime);
-  
-  // Clear selected commits when time changes
-  selectedCommits = [];
-}let data = [];
+// First, let's make sure we have our global variables set up properly
+let data = [];
 let commits = [];
-let filteredCommits = []; // Add filteredCommits variable
-let xScale, yScale, timeScale; // Make scales global
+let filteredCommits = []; 
+let xScale, yScale, timeScale;
 let selectedCommits = [];
-let commitProgress = 100;
-let commitMaxTime;
 
 // Scrollytelling variables
 let NUM_ITEMS; // Will be set to commits.length 
@@ -93,7 +85,7 @@ function processCommits() {
       let { author, date, time, timezone, datetime } = first;
       let ret = {
         id: commit,
-        url: 'https://github.com/vis-society/lab-7/commit/' + commit,
+        url: 'https://github.com/username/portfolio/commit/' + commit,
         author,
         date,
         time,
@@ -117,15 +109,10 @@ function processCommits() {
 function displayStats() {
   processCommits();
   
-  // Set up time scale after commits are processed
-  timeScale = d3.scaleTime()
-    .domain([d3.min(commits, d => d.datetime), d3.max(commits, d => d.datetime)])
-    .range([0, 100]);
-  commitMaxTime = timeScale.invert(commitProgress);
+  // Set scrollytelling items count to commits length
+  NUM_ITEMS = commits.length;
+  totalHeight = NUM_ITEMS * ITEM_HEIGHT;
   
-  // Initialize filtered commits
-  filterCommitsByTime();
-
   const statsDiv = d3.select('#stats')
     .append('div')
     .attr('class', 'summary-section');
@@ -356,69 +343,32 @@ function updateScatterplot(filteredCommits) {
   brushGroup.selectAll('.handle').style('pointer-events', 'none');
 }
 
-// Update the display of the selected time
-function updateTimeDisplay() {
-  const selectedTime = document.getElementById('selectedTime');
-  if (selectedTime) {
-    selectedTime.textContent = timeScale.invert(commitProgress).toLocaleString('en', {
-      dateStyle: "long",
-      timeStyle: "short"
-    });
-  }
-  
-  // Filter commits and update visualization
-  filterCommitsByTime();
-  updateScatterplot(filteredCommits);
-  updateFileVisualization(); // Add this line
-  updateSelectionCount();
-  updateLanguageBreakdown();
-}
-
-// Create file visualization
-function updateFileVisualization() {
-  // Get all lines from filtered commits
-  let lines = filteredCommits.flatMap((d) => d.lines);
-  
-  // Group lines by file
-  let files = d3
-    .groups(lines, (d) => d.file)
-    .map(([name, lines]) => {
-      return { name, lines };
-    });
-    
-  // Sort files by number of lines (descending)
-  files = d3.sort(files, (d) => -d.lines.length);
-  
-  // Create color scale for file types
+// Display files visualization for a set of commits
+function displayCommitFiles(visibleCommits) {
+  const lines = visibleCommits.flatMap((d) => d.lines);
   let fileTypeColors = d3.scaleOrdinal(d3.schemeTableau10);
   
-  // Create files container if it doesn't exist
-  if (!d3.select('.files').size()) {
-    d3.select('#stats').append('h2').text('Files by Size');
-    d3.select('#stats').append('dl').attr('class', 'files');
-  }
+  let files = d3.groups(lines, (d) => d.file).map(([name, lines]) => {
+    return { name, lines };
+  });
   
-  // Clear previous content
+  // Sort by size
+  files = d3.sort(files, (d) => -d.lines.length);
+  
+  // Update visualization
   d3.select('.files').selectAll('div').remove();
   
-  // Create file entries
   let filesContainer = d3.select('.files')
     .selectAll('div')
     .data(files)
     .enter()
     .append('div');
   
-  // Add file names with line count
   filesContainer.append('dt')
-    .html(d => `
-      <code>${d.name}</code>
-      <small>${d.lines.length} lines</small>
-    `);
+    .html(d => `<code>${d.name}</code><small>${d.lines.length} lines</small>`);
   
-  // Add unit visualization with one div per line
-  const dds = filesContainer.append('dd');
-  
-  dds.selectAll('div')
+  filesContainer.append('dd')
+    .selectAll('div')
     .data(d => d.lines)
     .enter()
     .append('div')
@@ -426,25 +376,16 @@ function updateFileVisualization() {
     .style('background', d => fileTypeColors(d.type.toLowerCase()));
 }
 
-// Set up scrollytelling after commits are processed
+// Set up scrollytelling functionality
 function setupScrollytelling() {
   NUM_ITEMS = commits.length;
   totalHeight = NUM_ITEMS * ITEM_HEIGHT;
   
-  // Make sure these elements exist
-  if (!d3.select('#spacer').size()) {
-    console.error('Missing #spacer element');
-    return;
-  }
-  
-  const scrollContainer = d3.select('#scroll-container');
+  // Set up the spacer height
   const spacer = d3.select('#spacer');
   spacer.style('height', `${totalHeight}px`);
   
-  console.log("Setting up scrollytelling with", commits.length, "commits");
-  
-  // Initial render - make sure newCommitSlice has items
-  renderItems(0);
+  const scrollContainer = d3.select('#scroll-container');
   
   // Add scroll event listener
   scrollContainer.on('scroll', () => {
@@ -453,6 +394,9 @@ function setupScrollytelling() {
     startIndex = Math.max(0, Math.min(startIndex, commits.length - VISIBLE_COUNT));
     renderItems(startIndex);
   });
+  
+  // Initial render
+  renderItems(0);
 }
 
 // Render commit items in the scrollytelling container
@@ -486,30 +430,122 @@ function renderItems(startIndex) {
           </a> was made. 
           ${commit.totalLines} lines were edited across 
           ${d3.rollups(commit.lines, D => D.length, d => d.file).length} files.
+          This commit was made at ${commit.datetime.getHours()}:${String(commit.datetime.getMinutes()).padStart(2, '0')}, 
+          which is ${commit.datetime.getHours() < 12 ? 'in the morning' : 
+                    commit.datetime.getHours() < 18 ? 'in the afternoon' : 'in the evening'}.
           Then I looked over all I had made, and I saw that it was very good.
         </p>
       `;
     })
     .style('position', 'absolute')
     .style('top', (_, idx) => `${idx * ITEM_HEIGHT}px`);
+    
+  // Update selection count and language breakdown
+  updateSelectionCount();
+  updateLanguageBreakdown();
 }
 
-// Update file visualization for visible commits
-function displayCommitFiles(visibleCommits) {
-  const lines = visibleCommits.flatMap((d) => d.lines);
-  let fileTypeColors = d3.scaleOrdinal(d3.schemeTableau10);
+// Additional globals for file size scrollytelling
+let FILE_NUM_ITEMS; // Will be set to total number of files
+let FILE_ITEM_HEIGHT = 60; // Height for each file item
+let FILE_VISIBLE_COUNT = 8; // Number of files visible at once
+let fileTotalHeight;
+let visibleFiles = []; // Currently visible files
+
+// Set up the second scrollytelling for file sizes
+function setupFileScrollytelling() {
+  // Get unique files from all commits
+  const allLines = commits.flatMap(commit => commit.lines);
+  const uniqueFiles = [...new Set(allLines.map(line => line.file))];
   
-  let files = d3.groups(lines, (d) => d.file).map(([name, lines]) => {
-    return { name, lines };
+  FILE_NUM_ITEMS = uniqueFiles.length;
+  fileTotalHeight = FILE_NUM_ITEMS * FILE_ITEM_HEIGHT;
+  
+  // Set up the file spacer height
+  const filesSpacer = d3.select('#files-spacer');
+  filesSpacer.style('height', `${fileTotalHeight}px`);
+  
+  const filesScrollContainer = d3.select('#files-scroll-container');
+  
+  // Add scroll event listener for files scrollytelling
+  filesScrollContainer.on('scroll', () => {
+    const scrollTop = filesScrollContainer.property('scrollTop');
+    let startIndex = Math.floor(scrollTop / FILE_ITEM_HEIGHT);
+    startIndex = Math.max(0, Math.min(startIndex, uniqueFiles.length - FILE_VISIBLE_COUNT));
+    renderFileItems(startIndex, uniqueFiles);
   });
   
-  // Sort by size
-  files = d3.sort(files, (d) => -d.lines.length);
+  // Initial render
+  renderFileItems(0, uniqueFiles);
+}
+
+// Render file items in the files scrollytelling container
+function renderFileItems(startIndex, uniqueFiles) {
+  const filesItemsContainer = d3.select('#files-items-container');
+  
+  // Clear previous items
+  filesItemsContainer.selectAll('div').remove();
+  
+  const endIndex = Math.min(startIndex + FILE_VISIBLE_COUNT, uniqueFiles.length);
+  const fileSlice = uniqueFiles.slice(startIndex, endIndex);
+  
+  // Get all lines for these files from all commits
+  const allLines = commits.flatMap(commit => commit.lines);
+  visibleFiles = fileSlice.map(fileName => {
+    const fileLines = allLines.filter(line => line.file === fileName);
+    return {
+      name: fileName,
+      lines: fileLines,
+      totalLines: fileLines.length,
+      types: [...new Set(fileLines.map(line => line.type))],
+      authors: [...new Set(fileLines.map(line => line.author))],
+      firstCommit: d3.min(fileLines, line => new Date(line.datetime)),
+      lastCommit: d3.max(fileLines, line => new Date(line.datetime))
+    };
+  });
+  
+  // Sort by size (largest first)
+  visibleFiles = d3.sort(visibleFiles, d => -d.totalLines);
+  
+  // Update file visualization with visible files only
+  displayVisibleFiles(visibleFiles);
+  
+  // Create file narrative items
+  filesItemsContainer.selectAll('div')
+    .data(visibleFiles)
+    .enter()
+    .append('div')
+    .attr('class', 'item')
+    .html((file, index) => {
+      return `
+        <p>
+          <strong>${file.name}</strong> contains ${file.totalLines} lines of code.
+          This file uses ${file.types.length > 1 ? 
+            `multiple languages: ${file.types.join(', ')}` : 
+            `${file.types[0]}`}.
+          ${file.authors.length > 1 ? 
+            `${file.authors.length} developers have contributed to this file.` : 
+            `Only ${file.authors[0]} has worked on this file.`}
+          It was first created on ${file.firstCommit.toLocaleDateString()} and last 
+          modified on ${file.lastCommit.toLocaleDateString()}.
+        </p>
+      `;
+    })
+    .style('position', 'absolute')
+    .style('top', (_, idx) => `${idx * FILE_ITEM_HEIGHT}px`);
+}
+
+// Display visible files visualization
+function displayVisibleFiles(files) {
+  let fileTypeColors = d3.scaleOrdinal(d3.schemeTableau10);
+  
+  // Get all lines from visible files
+  const lines = files.flatMap(file => file.lines);
   
   // Update visualization
-  d3.select('.files').selectAll('div').remove();
+  d3.select('#file-visualization').selectAll('div').remove();
   
-  let filesContainer = d3.select('.files')
+  let filesContainer = d3.select('#file-visualization')
     .selectAll('div')
     .data(files)
     .enter()
@@ -527,20 +563,9 @@ function displayCommitFiles(visibleCommits) {
     .style('background', d => fileTypeColors(d.type.toLowerCase()));
 }
 
-// Add event listener for the time slider
-function setupTimeSlider() {
-  const slider = document.getElementById('time-slider');
-  if (slider) {
-    slider.addEventListener('input', (event) => {
-      commitProgress = Number(event.target.value);
-      updateTimeDisplay();
-    });
-  }
-}
-
-// Modify your DOMContentLoaded event to use scrollytelling instead of time slider
+// Initialize the visualization when the page loads
 document.addEventListener('DOMContentLoaded', async () => {
   await loadData();
-  // Instead of setting up time slider, set up scrollytelling
   setupScrollytelling();
+  setupFileScrollytelling();
 });
