@@ -13,6 +13,12 @@ let selectedCommits = [];
 let commitProgress = 100;
 let commitMaxTime;
 
+// Scrollytelling variables
+let NUM_ITEMS; // Will be set to commits.length 
+let ITEM_HEIGHT = 60; // Taller to fit narrative text
+let VISIBLE_COUNT = 10;
+let totalHeight;
+
 const width = 1000;
 const height = 600;
 
@@ -246,6 +252,8 @@ function updateScatterplot(filteredCommits) {
   const svg = d3
     .select('#chart')
     .append('svg')
+    .attr('width', '100%') // Make sure it fills the container
+    .attr('height', height)
     .attr('viewBox', `0 0 ${width} ${height}`)
     .style('overflow', 'visible');
   
@@ -361,8 +369,162 @@ function updateTimeDisplay() {
   // Filter commits and update visualization
   filterCommitsByTime();
   updateScatterplot(filteredCommits);
+  updateFileVisualization(); // Add this line
   updateSelectionCount();
   updateLanguageBreakdown();
+}
+
+// Create file visualization
+function updateFileVisualization() {
+  // Get all lines from filtered commits
+  let lines = filteredCommits.flatMap((d) => d.lines);
+  
+  // Group lines by file
+  let files = d3
+    .groups(lines, (d) => d.file)
+    .map(([name, lines]) => {
+      return { name, lines };
+    });
+    
+  // Sort files by number of lines (descending)
+  files = d3.sort(files, (d) => -d.lines.length);
+  
+  // Create color scale for file types
+  let fileTypeColors = d3.scaleOrdinal(d3.schemeTableau10);
+  
+  // Create files container if it doesn't exist
+  if (!d3.select('.files').size()) {
+    d3.select('#stats').append('h2').text('Files by Size');
+    d3.select('#stats').append('dl').attr('class', 'files');
+  }
+  
+  // Clear previous content
+  d3.select('.files').selectAll('div').remove();
+  
+  // Create file entries
+  let filesContainer = d3.select('.files')
+    .selectAll('div')
+    .data(files)
+    .enter()
+    .append('div');
+  
+  // Add file names with line count
+  filesContainer.append('dt')
+    .html(d => `
+      <code>${d.name}</code>
+      <small>${d.lines.length} lines</small>
+    `);
+  
+  // Add unit visualization with one div per line
+  const dds = filesContainer.append('dd');
+  
+  dds.selectAll('div')
+    .data(d => d.lines)
+    .enter()
+    .append('div')
+    .attr('class', 'line')
+    .style('background', d => fileTypeColors(d.type.toLowerCase()));
+}
+
+// Set up scrollytelling after commits are processed
+function setupScrollytelling() {
+  NUM_ITEMS = commits.length;
+  totalHeight = NUM_ITEMS * ITEM_HEIGHT;
+  
+  // Make sure these elements exist
+  if (!d3.select('#spacer').size()) {
+    console.error('Missing #spacer element');
+    return;
+  }
+  
+  const scrollContainer = d3.select('#scroll-container');
+  const spacer = d3.select('#spacer');
+  spacer.style('height', `${totalHeight}px`);
+  
+  console.log("Setting up scrollytelling with", commits.length, "commits");
+  
+  // Initial render - make sure newCommitSlice has items
+  renderItems(0);
+  
+  // Add scroll event listener
+  scrollContainer.on('scroll', () => {
+    const scrollTop = scrollContainer.property('scrollTop');
+    let startIndex = Math.floor(scrollTop / ITEM_HEIGHT);
+    startIndex = Math.max(0, Math.min(startIndex, commits.length - VISIBLE_COUNT));
+    renderItems(startIndex);
+  });
+}
+
+// Render commit items in the scrollytelling container
+function renderItems(startIndex) {
+  const itemsContainer = d3.select('#items-container');
+  
+  // Clear previous items
+  itemsContainer.selectAll('div').remove();
+  
+  const endIndex = Math.min(startIndex + VISIBLE_COUNT, commits.length);
+  let newCommitSlice = commits.slice(startIndex, endIndex);
+  
+  // Update scatter plot with the visible commits
+  updateScatterplot(newCommitSlice);
+  
+  // Update file visualization with the visible commits
+  displayCommitFiles(newCommitSlice);
+  
+  // Create commit narrative items
+  itemsContainer.selectAll('div')
+    .data(newCommitSlice)
+    .enter()
+    .append('div')
+    .attr('class', 'item')
+    .html((commit, index) => {
+      return `
+        <p>
+          On ${commit.datetime.toLocaleString("en", {dateStyle: "full", timeStyle: "short"})}, 
+          <a href="${commit.url}" target="_blank">
+            ${index + startIndex > 0 ? 'another glorious commit' : 'my first commit, and it was glorious'}
+          </a> was made. 
+          ${commit.totalLines} lines were edited across 
+          ${d3.rollups(commit.lines, D => D.length, d => d.file).length} files.
+          Then I looked over all I had made, and I saw that it was very good.
+        </p>
+      `;
+    })
+    .style('position', 'absolute')
+    .style('top', (_, idx) => `${idx * ITEM_HEIGHT}px`);
+}
+
+// Update file visualization for visible commits
+function displayCommitFiles(visibleCommits) {
+  const lines = visibleCommits.flatMap((d) => d.lines);
+  let fileTypeColors = d3.scaleOrdinal(d3.schemeTableau10);
+  
+  let files = d3.groups(lines, (d) => d.file).map(([name, lines]) => {
+    return { name, lines };
+  });
+  
+  // Sort by size
+  files = d3.sort(files, (d) => -d.lines.length);
+  
+  // Update visualization
+  d3.select('.files').selectAll('div').remove();
+  
+  let filesContainer = d3.select('.files')
+    .selectAll('div')
+    .data(files)
+    .enter()
+    .append('div');
+  
+  filesContainer.append('dt')
+    .html(d => `<code>${d.name}</code><small>${d.lines.length} lines</small>`);
+  
+  filesContainer.append('dd')
+    .selectAll('div')
+    .data(d => d.lines)
+    .enter()
+    .append('div')
+    .attr('class', 'line')
+    .style('background', d => fileTypeColors(d.type.toLowerCase()));
 }
 
 // Add event listener for the time slider
@@ -376,9 +538,9 @@ function setupTimeSlider() {
   }
 }
 
+// Modify your DOMContentLoaded event to use scrollytelling instead of time slider
 document.addEventListener('DOMContentLoaded', async () => {
   await loadData();
-  updateScatterplot(filteredCommits);
-  updateTimeDisplay();
-  setupTimeSlider();
+  // Instead of setting up time slider, set up scrollytelling
+  setupScrollytelling();
 });

@@ -16,17 +16,21 @@
         <p>This page includes stats about the code of this website.</p>
         <div id="stats"></div>
         <h2>Commits by time of Day</h2>
-        <div class = "time-filter">
-            <label>
-                Show commits until:
-                <input type = "range" id = "time-slider" min = "0" max = "100" value = "100">
-                <time id = "selectedTime"></time>
-            </label>
+
+        <div id="scrollytelling">
+            <div id="scroll-container">
+                <div id="spacer"></div>
+                <div id="items-container"></div>
+            </div>
+            <!-- our old scatterplot div -->
+            <div id="chart"></div>
         </div>
 
-        <div id="chart"></div>
         <p id="selection-count" style="margin-top: 1em;">No commits selected</p>
         <dl id="language-breakdown" class="stats"></dl>
+
+        <h2>Files by size</h2>
+        <dl class="files"></dl>
 
         <!-- Keep tooltip at the end -->
         <dl id="commit-tooltip" class="info tooltip" hidden>
